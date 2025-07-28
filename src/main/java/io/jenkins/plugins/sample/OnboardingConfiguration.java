@@ -97,16 +97,16 @@ public class OnboardingConfiguration extends GlobalConfiguration {
 
     /**
      * A field validator for name field (plugin name) on the optional view on the Onboarding Plugin Section
-     * @param pluginName
-     *        name field pluginName (plugin name) to validate
+     * @param name
+     *        name field name (plugin name) to validate
      * @return
      *       FormValidation object
      */
-    public FormValidation doCheckName(@QueryParameter String pluginName) {
-        if (pluginName.isEmpty()) {
+    public FormValidation doCheckName(@QueryParameter String name) {
+        if (name.isEmpty()) {
             return FormValidation.error("Please enter your name");
         } else {
-            if (!PluginHelper.isMatch(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(name, PLUGIN_NAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid name format");
             }
             return FormValidation.ok();
