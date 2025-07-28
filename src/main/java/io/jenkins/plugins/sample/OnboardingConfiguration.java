@@ -1,17 +1,23 @@
 package io.jenkins.plugins.sample;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.sample.helper.PluginHelper;
 import jakarta.servlet.ServletException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  The class representing Onboarding Plugin section on the System configuration page
@@ -31,6 +37,42 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         load();
     }
 
+    /**
+     * This method makes Http Post Request to the URL passed a san argument with base 64 encoded username and password values
+     * @param url
+     *       url to make http post request to
+     * @param username
+     * @param password
+     * @return
+     * @throws IOException
+     */
+    private static int httpPostBasicAuth(String url, String username, String password) throws IOException {
+        String credentials = username + ":" + password;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        String authHeaderValue = "Basic " + encodedCredentials;
+        URL targetUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) targetUrl.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Authorization", authHeaderValue);
+        return connection.getResponseCode();
+    }
+
+    /**
+     * Checks if the value provided matches the regex pattern provided
+     * @param value
+     *        the value to check for against teh regex
+     * @param regex
+     *        the regex against which to validate value
+     * @return
+     *       boolean true if value matches regex
+     *               false if value doesn't match the regex
+     */
+    private static boolean isMatch(String value, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(value);
+        return matcher.matches();
+    }
+
     public String getUrl() {
         return url;
     }
@@ -44,8 +86,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         return username;
     }
 
-    public void clear
-            (String username) {
+    public void clear(String username) {
         this.username = username;
         save();
     }
@@ -88,7 +129,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         if (username.isEmpty()) {
             return FormValidation.error("Please enter your Username");
         } else {
-            if (!PluginHelper.isMatch(username, USERNAME_REGEX_PATTERN)) {
+            if (!isMatch(username, USERNAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid Username format");
             }
             return FormValidation.ok();
@@ -106,7 +147,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         if (name.isEmpty()) {
             return FormValidation.error("Please enter your name");
         } else {
-            if (!PluginHelper.isMatch(name, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!isMatch(name, PLUGIN_NAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid name format");
             }
             return FormValidation.ok();
@@ -132,10 +173,10 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         String userName = json.getString("username");
 
         if (pluginName != null || userName != null) {
-            if (!PluginHelper.isMatch(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!isMatch(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
                 return false;
             }
-            if (!PluginHelper.isMatch(userName, USERNAME_REGEX_PATTERN)) {
+            if (!isMatch(userName, USERNAME_REGEX_PATTERN)) {
                 return false;
             }
             req.bindJSON(this, json);
@@ -165,17 +206,20 @@ public class OnboardingConfiguration extends GlobalConfiguration {
             @QueryParameter("password") final String password)
             throws IOException, ServletException {
         try {
-            if (url.isEmpty() || username.isEmpty() || password.isEmpty()) {
-                return FormValidation.error("Mandatory parameters cannot be null or empty");
+            if (Util.fixEmptyAndTrim(url) == null
+                    || Util.fixEmptyAndTrim(username) == null
+                    || Util.fixEmptyAndTrim(password) == null) {
+                return FormValidation.error("url or username or password must not be null or empty ");
             }
-            int statusCode = PluginHelper.httpPostBasicAuth(url, username, password);
+            int statusCode = httpPostBasicAuth(url, username, password);
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 return FormValidation.error("Server error : " + statusCode);
             } else {
                 return FormValidation.ok("Input Validated");
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException iox) {
             return FormValidation.error("Server Error Occured with status code 500 ");
         }
     }
+
 }
