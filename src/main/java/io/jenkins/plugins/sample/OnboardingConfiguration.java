@@ -5,12 +5,6 @@ import hudson.Util;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
 import jakarta.servlet.ServletException;
-import jenkins.model.GlobalConfiguration;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest2;
-import org.kohsuke.stapler.verb.POST;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -18,6 +12,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import jenkins.model.GlobalConfiguration;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  *  The class representing Onboarding Plugin section on the System configuration page
@@ -86,7 +85,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         return username;
     }
 
-    public void clear(String username) {
+    public void setUsername(String username) {
         this.username = username;
         save();
     }
@@ -221,5 +220,4 @@ public class OnboardingConfiguration extends GlobalConfiguration {
             return FormValidation.error("Server Error Occured with status code 500 ");
         }
     }
-
 }
