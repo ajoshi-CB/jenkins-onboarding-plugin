@@ -14,7 +14,7 @@ import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
 
 /**
- *The class representing Onboarding Plugin section on the System configuration page
+ *  The class representing Onboarding Plugin section on the System configuration page
  */
 @Extension
 public class OnboardingConfiguration extends GlobalConfiguration {
@@ -79,16 +79,16 @@ public class OnboardingConfiguration extends GlobalConfiguration {
 
     /**
      * A field validator for username field on the optional view on the Onboarding Plugin Section
-     * @param value
-     *       username field value to validate
+     * @param username
+     *       username field username to validate
      * @return
      *       FormValidation object
      */
-    public FormValidation doCheckUsername(@QueryParameter String value) {
-        if (value.isEmpty()) {
+    public FormValidation doCheckUsername(@QueryParameter String username) {
+        if (username.isEmpty()) {
             return FormValidation.error("Please enter your Username");
         } else {
-            if (!PluginHelper.isMatch(value, USERNAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(username, USERNAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid Username format");
             }
             return FormValidation.ok();
@@ -97,16 +97,16 @@ public class OnboardingConfiguration extends GlobalConfiguration {
 
     /**
      * A field validator for name field (plugin name) on the optional view on the Onboarding Plugin Section
-     * @param value
-     *        name field value (plugin name) to validate
+     * @param pluginName
+     *        name field pluginName (plugin name) to validate
      * @return
      *       FormValidation object
      */
-    public FormValidation doCheckName(@QueryParameter String value) {
-        if (value.isEmpty()) {
+    public FormValidation doCheckName(@QueryParameter String pluginName) {
+        if (pluginName.isEmpty()) {
             return FormValidation.error("Please enter your name");
         } else {
-            if (!PluginHelper.isMatch(value, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid name format");
             }
             return FormValidation.ok();
