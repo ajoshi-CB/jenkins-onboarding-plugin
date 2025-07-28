@@ -3,7 +3,7 @@ package io.jenkins.plugins.sample;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.sample.util.PluginHelper;
+import io.jenkins.plugins.sample.helper.PluginHelper;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,6 +13,9 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
 
+/**
+ *The class representing Onboarding Plugin section on the System configuration page
+ */
 @Extension
 public class OnboardingConfiguration extends GlobalConfiguration {
 
@@ -41,7 +44,8 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void clear
+            (String username) {
         this.username = username;
         save();
     }
@@ -73,38 +77,65 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         save();
     }
 
+    /**
+     * A field validator for username field on the optional view on the Onboarding Plugin Section
+     * @param value
+     *       username field value to validate
+     * @return
+     *       FormValidation object
+     */
     public FormValidation doCheckUsername(@QueryParameter String value) {
         if (value.isEmpty()) {
             return FormValidation.error("Please enter your Username");
         } else {
-            if (PluginHelper.isInvalidField(value, USERNAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(value, USERNAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid Username format");
             }
             return FormValidation.ok();
         }
     }
 
+    /**
+     * A field validator for name field (plugin name) on the optional view on the Onboarding Plugin Section
+     * @param value
+     *        name field value (plugin name) to validate
+     * @return
+     *       FormValidation object
+     */
     public FormValidation doCheckName(@QueryParameter String value) {
         if (value.isEmpty()) {
             return FormValidation.error("Please enter your name");
         } else {
-            if (PluginHelper.isInvalidField(value, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(value, PLUGIN_NAME_REGEX_PATTERN)) {
                 return FormValidation.error("Invalid name format");
             }
             return FormValidation.ok();
         }
     }
 
+    /**
+     * This method validates the name and username parameters based on validation regexes
+     * {@link #PLUGIN_NAME_REGEX_PATTERN} and {@link #USERNAME_REGEX_PATTERN}
+     * It just overrides the {@link jenkins.model.GlobalConfiguration#configure(StaplerRequest2, JSONObject)}} method
+     * to validate name (plugin name) and username fields when the Save or Apply Button is clicked on System Configuration page
+     * @param req
+     *      The stapler request object
+     * @param json
+     *      The JSON object that captures the configuration data for this {@link hudson.model.Descriptor}.
+     *      See <a href="https://www.jenkins.io/doc/developer/forms/structured-form-submission/">the developer documentation</a>.
+     * @return boolean If validation for the fields (name and username) is successfull, return true else return false
+     * @throws FormException
+     */
     @Override
     public boolean configure(StaplerRequest2 req, JSONObject json) throws FormException {
         String pluginName = json.getString("name");
         String userName = json.getString("username");
 
         if (pluginName != null || userName != null) {
-            if (PluginHelper.isInvalidField(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
                 return false;
             }
-            if (PluginHelper.isInvalidField(userName, PLUGIN_NAME_REGEX_PATTERN)) {
+            if (!PluginHelper.isMatch(userName, USERNAME_REGEX_PATTERN)) {
                 return false;
             }
             req.bindJSON(this, json);
@@ -114,6 +145,19 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         }
     }
 
+    /**
+     * This method validates the url , username and password fields in the optional view on the Onboarding Plugin Section
+     * @param url
+     *      url to send username and password to
+     * @param username
+     *      username field
+     * @param password
+     *      password field
+     * @return
+     *      FormValidation object
+     * @throws IOException
+     * @throws ServletException
+     */
     @POST
     public FormValidation doTestConnection(
             @QueryParameter("url") final String url,
@@ -126,7 +170,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
             }
             int statusCode = PluginHelper.httpPostBasicAuth(url, username, password);
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                return FormValidation.error("Sever error : " + statusCode);
+                return FormValidation.error("Server error : " + statusCode);
             } else {
                 return FormValidation.ok("Input Validated");
             }
