@@ -1,10 +1,5 @@
 package io.jenkins.plugins.sample;
 
-import hudson.Extension;
-import hudson.Util;
-import hudson.util.FormValidation;
-import hudson.util.Secret;
-import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -12,11 +7,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jenkins.model.GlobalConfiguration;
-import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
+import jakarta.servlet.ServletException;
+import net.sf.json.JSONObject;
+
+import hudson.Extension;
+import hudson.Util;
+import hudson.util.FormValidation;
+import hudson.util.Secret;
+import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
 
 /**
  *  The class representing Onboarding Plugin section on the System configuration page
@@ -205,6 +208,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
             @QueryParameter("password") final String password)
             throws IOException, ServletException {
         try {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             if (Util.fixEmptyAndTrim(url) == null
                     || Util.fixEmptyAndTrim(username) == null
                     || Util.fixEmptyAndTrim(password) == null) {
@@ -217,7 +221,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
                 return FormValidation.ok("Input Validated");
             }
         } catch (IOException iox) {
-            return FormValidation.error("Server Error Occured with status code 500 ");
+            return FormValidation.error(iox.getMessage());
         }
     }
 }
