@@ -1,25 +1,33 @@
 package io.jenkins.plugins.sample;
 
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import hudson.Extension;
+import hudson.Util;
+import hudson.security.ACL;
+import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
+import hudson.util.Secret;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
-import jakarta.servlet.ServletException;
-import net.sf.json.JSONObject;
-
-import hudson.Extension;
-import hudson.Util;
-import hudson.util.FormValidation;
-import hudson.util.Secret;
-import jenkins.model.GlobalConfiguration;
-import jenkins.model.Jenkins;
 
 /**
  *  The class representing Onboarding Plugin section on the System configuration page
@@ -48,7 +56,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
      * @return
      * @throws IOException
      */
-    private static int httpPostBasicAuth(String url, String username, String password) throws IOException {
+    private static int httpPostBasicAuth(String url, String username, String password, String data) throws IOException {
         String credentials = username + ":" + password;
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
         String authHeaderValue = "Basic " + encodedCredentials;
@@ -56,6 +64,11 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         HttpURLConnection connection = (HttpURLConnection) targetUrl.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Authorization", authHeaderValue);
+        if (Util.fixEmptyAndTrim(data) != null) {
+            connection.setDoOutput(true);
+            byte[] postData = data.getBytes(StandardCharsets.UTF_8);
+            connection.getOutputStream().write(postData, 0, postData.length);
+        }
         return connection.getResponseCode();
     }
 
@@ -214,7 +227,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
                     || Util.fixEmptyAndTrim(password) == null) {
                 return FormValidation.error("url or username or password must not be null or empty ");
             }
-            int statusCode = httpPostBasicAuth(url, username, password);
+            int statusCode = httpPostBasicAuth(url, username, password, null);
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 return FormValidation.error("Server error : " + statusCode);
             } else {
@@ -223,5 +236,48 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         } catch (IOException iox) {
             return FormValidation.error(iox.getMessage());
         }
+    }
+
+    public ListBoxModel doFillCredentialsIdItems(@QueryParameter String credentialsId) {
+        return new StandardListBoxModel()
+                .includeEmptyValue()
+                .includeMatchingAs(
+                        ACL.SYSTEM2,
+                        Objects.requireNonNull(Jenkins.getInstanceOrNull()),
+                        StringCredentials.class,
+                        Collections.<DomainRequirement>emptyList(),
+                        CredentialsMatchers.always())
+                .includeCurrentValue(credentialsId);
+    }
+
+    public FormValidation doSubmitCredential(@QueryParameter String credentialsId) throws IOException {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+        if (Util.fixEmptyAndTrim(credentialsId) == null) {
+            return FormValidation.error("credentialsId must not be null or empty ");
+        }
+        StandardCredentials credential = lookupCredentials(credentialsId);
+        if (credential == null) {
+            return FormValidation.error("No credential found with id: " + credentialsId);
+        }
+        if (credential instanceof StringCredentials stringCredentials) {
+            if (stringCredentials.getSecret() == null
+                    || stringCredentials.getSecret().getPlainText().isEmpty()) {
+                return FormValidation.error("The credential secret must not be null or empty");
+            }
+            httpPostBasicAuth(
+                    getUrl(),
+                    getUsername(),
+                    getPassword().getPlainText(),
+                    stringCredentials.getSecret().getPlainText());
+            return FormValidation.ok();
+        } else {
+            return FormValidation.error("Only StringCredentials are supported");
+        }
+    }
+
+    private static StandardCredentials lookupCredentials(String credentialId) {
+        return CredentialsMatchers.firstOrNull(
+                CredentialsProvider.lookupCredentialsInItem(StandardCredentials.class, null, ACL.SYSTEM2, null),
+                CredentialsMatchers.withId(credentialId));
     }
 }

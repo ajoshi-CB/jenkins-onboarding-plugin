@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials" >
     <f:section title="Onboarding Plugin">
         <f:entry title="${%Name}" field="name">
             <f:textbox/>
@@ -9,7 +9,6 @@
         </f:entry>
 
         <f:block>
-
             <table>
                 <f:optionalBlock inline="true" title="Use existing dynamic view">
                     <f:entry title="${%Url}" field="url">
@@ -21,12 +20,17 @@
                     <f:entry title="${%Password}" field="password">
                         <f:password />
                     </f:entry>
+                    <f:entry field="credentialsId" title="${%Credentials}">
+                        <c:select/>
+                    </f:entry>
                     <f:validateButton
                             title="${%Test Connection}" progress="${%Testing...}"
                             method="testConnection" with="url,username,password"/>
+                    <f:validateButton
+                            title="${%Test Payload}" progress="${%Testing...}"
+                            method="submitCredential" with="credentialsId"/>
                 </f:optionalBlock>
             </table>
-
         </f:block>
     </f:section>
 </j:jelly>
