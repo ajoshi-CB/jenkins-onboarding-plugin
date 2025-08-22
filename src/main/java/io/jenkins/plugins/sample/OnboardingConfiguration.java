@@ -250,6 +250,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
                 .includeCurrentValue(credentialsId);
     }
 
+    @POST
     public FormValidation doSubmitCredential(@QueryParameter String credentialsId) throws IOException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         if (Util.fixEmptyAndTrim(credentialsId) == null) {
