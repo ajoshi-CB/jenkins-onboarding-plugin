@@ -5,7 +5,7 @@ import hudson.model.Descriptor;
 import java.util.UUID;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class ListEntry {
+public class ListEntry extends Entry {
 
     private final String name;
     private final UUID uuid;

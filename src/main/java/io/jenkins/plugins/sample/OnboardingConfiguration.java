@@ -41,10 +41,10 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     private String url;
     private String username;
     private Secret password;
-    private List<ListEntry> entries;
+    private List<Entry> entries;
 
     @DataBoundConstructor
-    public OnboardingConfiguration(List<ListEntry> entries) {
+    public OnboardingConfiguration(List<Entry> entries) {
         load();
         this.entries = initList();
     }
@@ -54,18 +54,18 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         this.entries = initList();
     }
 
-    private List<ListEntry> initList() {
-        ListEntry entry1 = new ListEntry("Entry1", UUID.randomUUID());
-        ListEntry entry2 = new ListEntry("Entry2", UUID.randomUUID());
-        ListEntry entry3 = new ListEntry("Entry3", UUID.randomUUID());
-        List<ListEntry> categories = new ArrayList<>();
+    private List<Entry> initList() {
+        Entry entry1 = new ListEntry("Entry1", UUID.randomUUID());
+        Entry entry2 = new ListEntry("Entry2", UUID.randomUUID());
+        Entry entry3 = new ListEntry("Entry3", UUID.randomUUID());
+        List<Entry> categories = new ArrayList<>();
         categories.add(entry1);
         categories.add(entry2);
         categories.add(entry3);
         return categories;
     }
 
-    public List<ListEntry> getEntries() {
+    public List<Entry> getEntries() {
         return Collections.unmodifiableList(entries);
     }
     /**
