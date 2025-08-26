@@ -20,8 +20,10 @@
                     <f:entry title="${%Password}" field="password">
                         <f:password />
                     </f:entry>
-                    <f:entry field="credentialsId" title="${%Credentials}">
-                        <c:select/>
+                    <f:entry field="entries">
+                        <f:repeatable var="entries"
+                                      items="${instance.entries}"
+                                      add="${%Add Entries}" header="Entry"/>
                     </f:entry>
                     <f:validateButton
                             title="${%Test Connection}" progress="${%Testing...}"
@@ -31,6 +33,7 @@
                             method="submitCredential" with="credentialsId"/>
                 </f:optionalBlock>
             </table>
+
         </f:block>
     </f:section>
 </j:jelly>

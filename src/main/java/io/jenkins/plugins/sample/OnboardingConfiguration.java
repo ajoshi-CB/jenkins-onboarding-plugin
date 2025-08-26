@@ -16,15 +16,14 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
@@ -42,11 +41,33 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     private String url;
     private String username;
     private Secret password;
+    private List<ListEntry> entries;
+
+    @DataBoundConstructor
+    public OnboardingConfiguration(List<ListEntry> entries) {
+        load();
+        this.entries = initList();
+    }
 
     public OnboardingConfiguration() {
         load();
+        this.entries = initList();
     }
 
+    private List<ListEntry> initList() {
+        ListEntry entry1 = new ListEntry("Entry1", UUID.randomUUID());
+        ListEntry entry2 = new ListEntry("Entry2", UUID.randomUUID());
+        ListEntry entry3 = new ListEntry("Entry3", UUID.randomUUID());
+        List<ListEntry> categories = new ArrayList<>();
+        categories.add(entry1);
+        categories.add(entry2);
+        categories.add(entry3);
+        return categories;
+    }
+
+    public List<ListEntry> getEntries() {
+        return Collections.unmodifiableList(entries);
+    }
     /**
      * This method makes Http Post Request to the URL passed a san argument with base 64 encoded username and password values
      * @param url
