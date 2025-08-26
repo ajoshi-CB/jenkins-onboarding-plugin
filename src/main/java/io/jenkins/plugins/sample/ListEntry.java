@@ -1,11 +1,12 @@
 package io.jenkins.plugins.sample;
 
 import hudson.Extension;
+import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import java.util.UUID;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class ListEntry extends Entry {
+public class ListEntry extends AbstractDescribableImpl<ListEntry> {
 
     private final String name;
     private final UUID uuid;
@@ -25,7 +26,7 @@ public class ListEntry extends Entry {
     }
 
     @Extension
-    public static class DescriptorImpl extends Descriptor<Entry> {
+    public static class DescriptorImpl extends Descriptor<ListEntry> {
         @Override
         public String getDisplayName() {
             return "Simple Entry";

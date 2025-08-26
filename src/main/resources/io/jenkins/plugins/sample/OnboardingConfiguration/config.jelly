@@ -21,9 +21,7 @@
                         <f:password />
                     </f:entry>
                     <f:entry field="entries">
-                        <f:repeatable var="entries"
-                                      items="${instance.entries}"
-                                      add="${%Add Entries}" header="Entry"/>
+                        <f:repeatableProperty field="entries"/>
                     </f:entry>
                     <f:validateButton
                             title="${%Test Connection}" progress="${%Testing...}"
