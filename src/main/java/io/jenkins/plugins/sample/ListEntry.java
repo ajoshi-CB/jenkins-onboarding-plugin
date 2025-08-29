@@ -3,17 +3,24 @@ package io.jenkins.plugins.sample;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import java.util.UUID;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class ListEntry extends AbstractDescribableImpl<ListEntry> {
 
-    private final String name;
-    private final UUID uuid;
+    private String name;
+    private String uuid;
 
     @DataBoundConstructor
-    public ListEntry(String name, UUID uuid) {
+    public ListEntry(String name, String uuid) {
         this.name = name;
+        this.uuid = uuid;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
@@ -21,7 +28,7 @@ public class ListEntry extends AbstractDescribableImpl<ListEntry> {
         return name;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 

@@ -6,4 +6,6 @@
     <f:entry title="${%UUID}" field="uuid">
         <f:readOnlyTextbox/>
     </f:entry>
+    <f:repeatableDeleteButton value="Delete Entry"/>
 </j:jelly>
+

@@ -55,18 +55,22 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     }
 
     private List<ListEntry> initList() {
-        ListEntry entry1 = new ListEntry("Entry1", UUID.randomUUID());
-        ListEntry entry2 = new ListEntry("Entry2", UUID.randomUUID());
-        ListEntry entry3 = new ListEntry("Entry3", UUID.randomUUID());
-        List<ListEntry> categories = new ArrayList<>();
-        categories.add(entry1);
-        categories.add(entry2);
-        categories.add(entry3);
-        return categories;
+        return Collections.emptyList();
+    }
+
+    public void setEntries(List<ListEntry> entries) {
+        if (entries != null) {
+            this.entries = entries.stream()
+                    .map(listEntry -> {
+                        String uuid = UUID.randomUUID().toString();
+                        return new ListEntry(listEntry.getName(), uuid);
+                    })
+                    .toList();
+        }
     }
 
     public List<ListEntry> getEntries() {
-        return Collections.unmodifiableList(entries);
+        return entries;
     }
     /**
      * This method makes Http Post Request to the URL passed a san argument with base 64 encoded username and password values
