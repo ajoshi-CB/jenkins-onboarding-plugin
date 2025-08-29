@@ -23,7 +23,6 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
@@ -42,12 +41,6 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     private String username;
     private Secret password;
     private List<ListEntry> entries;
-
-    @DataBoundConstructor
-    public OnboardingConfiguration(List<ListEntry> entries) {
-        load();
-        this.entries = initList();
-    }
 
     public OnboardingConfiguration() {
         load();
