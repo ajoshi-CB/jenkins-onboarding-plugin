@@ -4,7 +4,7 @@
         <f:textbox/>
     </f:entry>
     <f:entry title="${%UUID}" field="uuid">
-        <f:readOnlyTextbox/>
+        <f:readOnlyTextbox default="UUID will be generated while saving"/>
     </f:entry>
     <f:repeatableDeleteButton value="Delete Entry"/>
 </j:jelly>
