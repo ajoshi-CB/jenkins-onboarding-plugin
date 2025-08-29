@@ -40,29 +40,29 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     private String url;
     private String username;
     private Secret password;
-    private List<ListEntry> entries;
+    private ListEntry[] entries;
 
     public OnboardingConfiguration() {
         load();
         this.entries = initList();
     }
 
-    private List<ListEntry> initList() {
-        return Collections.emptyList();
+    private ListEntry[] initList() {
+        return new ListEntry[] {};
     }
 
-    public void setEntries(List<ListEntry> entries) {
+    public void setEntries(ListEntry[] entries) {
         if (entries != null) {
-            this.entries = entries.stream()
+            this.entries = Arrays.stream(entries)
                     .map(listEntry -> {
                         String uuid = UUID.randomUUID().toString();
                         return new ListEntry(listEntry.getName(), uuid);
                     })
-                    .toList();
+                    .toArray(ListEntry[]::new);
         }
     }
 
-    public List<ListEntry> getEntries() {
+    public ListEntry[] getEntries() {
         return entries;
     }
     /**
