@@ -20,6 +20,10 @@ public class ListEntry extends AbstractDescribableImpl<ListEntry> {
         return name;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
     @Extension
     public static class DescriptorImpl extends Descriptor<ListEntry> {
         @Override
