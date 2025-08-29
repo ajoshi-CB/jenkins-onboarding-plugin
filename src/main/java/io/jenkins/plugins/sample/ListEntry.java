@@ -7,8 +7,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class ListEntry extends AbstractDescribableImpl<ListEntry> {
 
-    private String name;
-    private String uuid;
+    private final String name;
+    private final String uuid;
 
     @DataBoundConstructor
     public ListEntry(String name, String uuid) {
@@ -16,20 +16,8 @@ public class ListEntry extends AbstractDescribableImpl<ListEntry> {
         this.uuid = uuid;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public String getUuid() {
-        return uuid;
     }
 
     @Extension
