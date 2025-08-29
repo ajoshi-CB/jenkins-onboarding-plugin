@@ -35,6 +35,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
 
     private static final String PLUGIN_NAME_REGEX_PATTERN = "^[a-zA-Z ]*$";
     private static final String USERNAME_REGEX_PATTERN = "^[a-zA-Z]*$";
+    private static final String UUID_DEFAULT_DISPLAY_TEXT = "UUID will be generated while saving";
     private String name;
     private String description;
     private String url;
@@ -55,8 +56,12 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         if (entries != null) {
             this.entries = Arrays.stream(entries)
                     .map(listEntry -> {
-                        String uuid = UUID.randomUUID().toString();
-                        return new ListEntry(listEntry.getName(), uuid);
+                        if (UUID_DEFAULT_DISPLAY_TEXT.equalsIgnoreCase(Util.fixEmptyAndTrim(listEntry.getUuid()))) {
+                            String uuid = UUID.randomUUID().toString();
+                            return new ListEntry(listEntry.getName(), uuid);
+                        } else {
+                            return listEntry;
+                        }
                     })
                     .toArray(ListEntry[]::new);
         }
