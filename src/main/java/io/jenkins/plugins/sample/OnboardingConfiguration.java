@@ -49,7 +49,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     }
 
     private void clearListEntries() {
-        this.entries = new ListEntry[] {};
+        this.entries = new ListEntry[0];
     }
 
     private ListEntry[] initList() {
