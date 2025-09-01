@@ -21,7 +21,11 @@
                         <f:password />
                     </f:entry>
                     <f:entry field="entries">
-                        <f:repeatableProperty field="entries"/>
+                        <f:repeatableProperty field="entries">
+                            <div align="right">
+                                <f:repeatableDeleteButton/>
+                            </div>
+                        </f:repeatableProperty>
                     </f:entry>
                     <f:validateButton
                             title="${%Test Connection}" progress="${%Testing...}"
