@@ -48,6 +48,10 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         this.entries = initList();
     }
 
+    private void clearListEntries() {
+        this.entries = new ListEntry[] {};
+    }
+
     private ListEntry[] initList() {
         return new ListEntry[] {};
     }
@@ -209,6 +213,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     public boolean configure(StaplerRequest2 req, JSONObject json) throws FormException {
         String pluginName = json.getString("name");
         String userName = json.getString("username");
+        clearListEntries();
 
         if (pluginName != null || userName != null) {
             if (!isMatch(pluginName, PLUGIN_NAME_REGEX_PATTERN)) {
