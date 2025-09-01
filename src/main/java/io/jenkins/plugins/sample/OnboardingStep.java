@@ -16,7 +16,6 @@ public class OnboardingStep extends Step {
 
     @DataBoundConstructor
     public OnboardingStep(String category) {
-        System.out.println("Inside OnboardingStep constructor");
         this.category = category;
     }
 
@@ -26,7 +25,6 @@ public class OnboardingStep extends Step {
 
     @Override
     public StepExecution start(StepContext context) throws Exception {
-        System.out.println("Starting OnboardingStep execution with category: " + category);
         return new OnboardingStepExecution(this, context);
     }
 

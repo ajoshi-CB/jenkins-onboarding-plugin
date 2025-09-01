@@ -13,6 +13,7 @@ import hudson.util.ListBoxModel;
 import java.io.IOException;
 import jenkins.model.GlobalConfiguration;
 import jenkins.tasks.SimpleBuildStep;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class OnboardingTask extends Builder implements SimpleBuildStep {
@@ -31,11 +32,11 @@ public class OnboardingTask extends Builder implements SimpleBuildStep {
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
-
         listener.getLogger().println("Selected Category is " + category);
     }
 
     @Extension
+    @Symbol("onboardingTask")
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
         public ListBoxModel doFillCategoryItems() {
