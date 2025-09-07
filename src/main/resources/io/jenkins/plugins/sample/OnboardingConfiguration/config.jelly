@@ -39,7 +39,7 @@
     </f:section>
 
     <f:section title="Build Info For Latest 5 Builds">
-        <f:entry title="${%RecordsFilePath}" field="recordsFilePath">
+        <f:entry title="${%File To Store Build Info}" field="recordsFilePath">
             <f:textbox/>
         </f:entry>
         <f:entry title="${%Latest 5 Build Links}">
