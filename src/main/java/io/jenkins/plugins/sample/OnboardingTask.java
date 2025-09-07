@@ -33,6 +33,7 @@ public class OnboardingTask extends Builder implements SimpleBuildStep {
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
         listener.getLogger().println("Selected Category is " + category);
+        run.addAction(new BuildCategoryAction(category));
     }
 
     @Extension

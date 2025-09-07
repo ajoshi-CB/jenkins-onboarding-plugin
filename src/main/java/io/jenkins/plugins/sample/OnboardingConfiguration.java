@@ -23,6 +23,7 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
@@ -42,6 +43,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     private String username;
     private Secret password;
     private ListEntry[] entries;
+    private String recordsFilePath;
 
     public OnboardingConfiguration() {
         load();
@@ -54,6 +56,16 @@ public class OnboardingConfiguration extends GlobalConfiguration {
 
     private ListEntry[] initList() {
         return new ListEntry[] {};
+    }
+
+    public String getRecordsFilePath() {
+        return recordsFilePath;
+    }
+
+    @DataBoundSetter
+    public void setRecordsFilePath(String recordsFilePath) {
+        this.recordsFilePath = recordsFilePath;
+        save();
     }
 
     public void setEntries(ListEntry[] entries) {

@@ -7,6 +7,9 @@
         <f:entry title="${%Description}" field="description">
             <f:textarea/>
         </f:entry>
+        <f:entry title="${%RecordsFilePath}" field="recordsFilePath">
+            <f:textbox/>
+        </f:entry>
 
         <f:block>
             <table>
