@@ -16,9 +16,14 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -314,6 +319,34 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         } else {
             return FormValidation.error("Only StringCredentials are supported");
         }
+    }
+
+    public String getBuildLinks() {
+        if (recordsFilePath == null || recordsFilePath.isEmpty()) {
+            return "Build records file path is not configured.";
+        }
+
+        Path path = Paths.get(recordsFilePath);
+        if (!Files.exists(path)) {
+            return "There are no build records to show.";
+        }
+
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines.map(this::generateBuildLink).collect(Collectors.joining("<br>"));
+        } catch (IOException e) {
+            return "Error reading build records.";
+        }
+    }
+
+    private String generateBuildLink(String buildInfo) {
+        String[] parts = buildInfo.split(", ");
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid build info format");
+        }
+        String jobName = parts[0].split(": ")[1];
+        String buildNumber = parts[1].split(": ")[1];
+        String url = Jenkins.get().getRootUrl() + "/" + "job" + "/" + jobName + "/" + buildNumber + "/";
+        return String.format("<a href=\"%s\">%s #%s</a>", url, jobName, buildNumber);
     }
 
     private static StandardCredentials lookupCredentials(String credentialId) {

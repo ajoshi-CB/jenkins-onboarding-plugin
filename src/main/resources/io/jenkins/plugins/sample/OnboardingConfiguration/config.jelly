@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials" >
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <f:section title="Onboarding Plugin">
         <f:entry title="${%Name}" field="name">
             <f:textbox/>
@@ -7,10 +7,6 @@
         <f:entry title="${%Description}" field="description">
             <f:textarea/>
         </f:entry>
-        <f:entry title="${%RecordsFilePath}" field="recordsFilePath">
-            <f:textbox/>
-        </f:entry>
-
         <f:block>
             <table>
                 <f:optionalBlock inline="true" title="Use existing dynamic view">
@@ -41,4 +37,16 @@
 
         </f:block>
     </f:section>
+
+    <f:section title="Build Info For Latest 5 Builds">
+        <f:entry title="${%RecordsFilePath}" field="recordsFilePath">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="${%Latest 5 Build Links}">
+            <f:block>
+                <j:out value="${instance.buildLinks}"/>
+            </f:block>
+        </f:entry>
+    </f:section>
+
 </j:jelly>
