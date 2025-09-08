@@ -34,12 +34,11 @@
                             method="submitCredential" with="credentialsId"/>
                 </f:optionalBlock>
             </table>
-
         </f:block>
     </f:section>
 
     <f:section title="Build Info For Latest 5 Builds">
-        <f:entry title="${%File To Store Build Info}" field="recordsFilePath">
+        <f:entry title="${%File To Store Build Info}" field="latestBuildsFilePath">
             <f:textbox/>
         </f:entry>
         <f:entry title="${%Latest 5 Build Links}">

@@ -48,7 +48,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     private String username;
     private Secret password;
     private ListEntry[] entries;
-    private String recordsFilePath;
+    private String latestBuildsFilePath;
 
     public OnboardingConfiguration() {
         load();
@@ -63,13 +63,13 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         return new ListEntry[] {};
     }
 
-    public String getRecordsFilePath() {
-        return recordsFilePath;
+    public String getLatestBuildsFilePath() {
+        return latestBuildsFilePath;
     }
 
     @DataBoundSetter
-    public void setRecordsFilePath(String recordsFilePath) {
-        this.recordsFilePath = recordsFilePath;
+    public void setLatestBuildsFilePath(String latestBuildsFilePath) {
+        this.latestBuildsFilePath = latestBuildsFilePath;
         save();
     }
 
@@ -323,10 +323,10 @@ public class OnboardingConfiguration extends GlobalConfiguration {
 
     public String getBuildLinks() {
         Path latestBuildFilepath;
-        if (recordsFilePath == null || recordsFilePath.isEmpty()) {
+        if (latestBuildsFilePath == null || latestBuildsFilePath.isEmpty()) {
             latestBuildFilepath = Paths.get(Jenkins.get().getRootDir().getAbsolutePath() + "/latestBuilds.txt");
         } else {
-            latestBuildFilepath = Paths.get(recordsFilePath);
+            latestBuildFilepath = Paths.get(latestBuildsFilePath);
         }
         if (!Files.exists(latestBuildFilepath)) {
             return "There are no build records to show.";

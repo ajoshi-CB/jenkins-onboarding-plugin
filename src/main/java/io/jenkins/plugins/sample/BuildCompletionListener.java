@@ -24,12 +24,12 @@ public class BuildCompletionListener extends RunListener<Run> {
         OnboardingConfiguration config = OnboardingConfiguration.all().get(OnboardingConfiguration.class);
         Path RECORDS_FILE_PATH;
         if (config == null
-                || config.getRecordsFilePath() == null
-                || config.getRecordsFilePath().isEmpty()) {
+                || config.getLatestBuildsFilePath() == null
+                || config.getLatestBuildsFilePath().isEmpty()) {
             listener.error("Build records file path is not configured :");
             RECORDS_FILE_PATH = Path.of(LATEST_BUILDS_FILEPATH);
         } else {
-            RECORDS_FILE_PATH = Path.of(config.getRecordsFilePath());
+            RECORDS_FILE_PATH = Path.of(config.getLatestBuildsFilePath());
         }
         BuildCategoryAction action = run.getAction(BuildCategoryAction.class);
         String category = (action != null) ? action.getCategory() : "";
