@@ -10,21 +10,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import jenkins.model.Jenkins;
 
 @Extension
 public class BuildCompletionListener extends RunListener<Run> {
 
-    private static final String LATEST_BUILDS_FILEPATH = "latestBuilds.txt";
-    private Path RECORDS_FILE_PATH = Path.of(LATEST_BUILDS_FILEPATH);
+    private static final String LATEST_BUILDS_FILEPATH =
+            Jenkins.get().getRootDir().getAbsolutePath() + "/latestBuilds.txt";
     private static final int MAX_RECORDS = 5;
 
     @Override
     public void onCompleted(Run run, hudson.model.TaskListener listener) {
         OnboardingConfiguration config = OnboardingConfiguration.all().get(OnboardingConfiguration.class);
+        Path RECORDS_FILE_PATH;
         if (config == null
                 || config.getRecordsFilePath() == null
                 || config.getRecordsFilePath().isEmpty()) {
-            listener.error("Build records file path is not configured, using default path: " + LATEST_BUILDS_FILEPATH);
+            listener.error("Build records file path is not configured :");
+            RECORDS_FILE_PATH = Path.of(LATEST_BUILDS_FILEPATH);
         } else {
             RECORDS_FILE_PATH = Path.of(config.getRecordsFilePath());
         }

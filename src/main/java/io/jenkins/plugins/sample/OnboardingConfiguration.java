@@ -322,16 +322,17 @@ public class OnboardingConfiguration extends GlobalConfiguration {
     }
 
     public String getBuildLinks() {
+        Path latestBuildFilepath;
         if (recordsFilePath == null || recordsFilePath.isEmpty()) {
-            return "Build records file path is not configured.";
+            latestBuildFilepath = Paths.get(Jenkins.get().getRootDir().getAbsolutePath() + "/latestBuilds.txt");
+        } else {
+            latestBuildFilepath = Paths.get(recordsFilePath);
         }
-
-        Path path = Paths.get(recordsFilePath);
-        if (!Files.exists(path)) {
+        if (!Files.exists(latestBuildFilepath)) {
             return "There are no build records to show.";
         }
 
-        try (Stream<String> lines = Files.lines(path)) {
+        try (Stream<String> lines = Files.lines(latestBuildFilepath)) {
             return lines.map(this::generateBuildLink).collect(Collectors.joining("<br>"));
         } catch (IOException e) {
             return "Error reading build records.";
@@ -345,7 +346,7 @@ public class OnboardingConfiguration extends GlobalConfiguration {
         }
         String jobName = parts[0].split(": ")[1];
         String buildNumber = parts[1].split(": ")[1];
-        String url = Jenkins.get().getRootUrl() + "/" + "job" + "/" + jobName + "/" + buildNumber + "/";
+        String url = Jenkins.get().getRootUrl() + "job" + "/" + jobName + "/" + buildNumber + "/";
         return String.format("<a href=\"%s\">%s #%s</a>", url, jobName, buildNumber);
     }
 
