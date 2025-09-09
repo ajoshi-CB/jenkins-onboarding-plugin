@@ -20,7 +20,7 @@ public class BuildCompletionListener extends RunListener<Run> {
     private static final int MAX_RECORDS = 5;
 
     @Override
-    public void onCompleted(Run run, hudson.model.TaskListener listener) {
+    public synchronized void onCompleted(Run run, hudson.model.TaskListener listener) {
         OnboardingConfiguration config = OnboardingConfiguration.all().get(OnboardingConfiguration.class);
         Path RECORDS_FILE_PATH;
         if (config == null

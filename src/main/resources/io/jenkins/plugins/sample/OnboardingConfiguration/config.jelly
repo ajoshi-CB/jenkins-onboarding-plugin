@@ -48,4 +48,12 @@
         </f:entry>
     </f:section>
 
+    <f:section title="Latest Job Per Category">
+        <f:entry>
+            <f:block>
+                <j:out value="${instance.latestJobPerCategory}"/>
+            </f:block>
+        </f:entry>
+    </f:section>
+
 </j:jelly>

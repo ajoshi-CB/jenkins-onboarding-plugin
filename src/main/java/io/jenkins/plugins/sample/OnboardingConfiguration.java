@@ -355,4 +355,41 @@ public class OnboardingConfiguration extends GlobalConfiguration {
                 CredentialsProvider.lookupCredentialsInItem(StandardCredentials.class, null, ACL.SYSTEM2, null),
                 CredentialsMatchers.withId(credentialId));
     }
+
+    public String getLatestJobPerCategory() {
+
+        String perCategoryJobNames = Jenkins.get().getRootDir().getAbsolutePath() + "/latestCategoryJobs.txt";
+        Path perCategoryJobNamesFilepath = Paths.get(perCategoryJobNames);
+        Map<String, String> categoryMap = new HashMap<>();
+        StringBuilder jobsPerCategory = new StringBuilder();
+
+        if (Files.exists(perCategoryJobNamesFilepath)) {
+            try (Stream<String> lines = Files.lines(perCategoryJobNamesFilepath)) {
+                lines.forEach(line -> {
+                    String[] parts = line.split(":", 2);
+                    if (parts.length == 2) {
+                        categoryMap.put(parts[0].trim(), parts[1].trim());
+                    }
+                });
+            } catch (IOException e) {
+                return "Error reading category job records.";
+            }
+        } else {
+            return "The file does not exist or cannot be accessed.";
+        }
+
+        if (categoryMap.isEmpty()) {
+            return "No job names found for any category.";
+        } else {
+            for (Map.Entry<String, String> entry : categoryMap.entrySet()) {
+                jobsPerCategory
+                        .append("Category: ")
+                        .append(entry.getKey())
+                        .append(", Latest Job: ")
+                        .append(entry.getValue())
+                        .append("<br/>");
+            }
+        }
+        return jobsPerCategory.toString();
+    }
 }
