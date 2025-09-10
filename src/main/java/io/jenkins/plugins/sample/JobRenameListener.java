@@ -28,8 +28,6 @@ public class JobRenameListener extends ItemListener {
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to rename job: " + e.getMessage());
                 }
-            } else {
-                throw new IllegalArgumentException("Could not find a job with the name: " + oldName);
             }
         } else {
             throw new IllegalStateException("Jenkins instance is not available");
