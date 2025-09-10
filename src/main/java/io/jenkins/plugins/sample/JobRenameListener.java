@@ -22,12 +22,7 @@ public class JobRenameListener extends ItemListener {
         Jenkins jenkins = Jenkins.getInstanceOrNull();
         if (jenkins != null) {
             if (item instanceof Job) {
-                try {
-                    ((Job<?, ?>) item).renameTo(newName);
-                    renameJobInFile(oldName, newName);
-                } catch (IOException e) {
-                    throw new RuntimeException("Exception in method onRenamed : " + e.getMessage());
-                }
+                renameJobInFile(oldName, newName);
             }
         } else {
             throw new IllegalStateException("Jenkins instance is not available");
