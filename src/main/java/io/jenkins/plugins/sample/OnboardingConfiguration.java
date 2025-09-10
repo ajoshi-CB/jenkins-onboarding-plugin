@@ -11,10 +11,11 @@ import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
-import jakarta.servlet.ServletException;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -256,15 +257,12 @@ public class OnboardingConfiguration extends GlobalConfiguration {
      *      password field
      * @return
      *      FormValidation object
-     * @throws IOException
-     * @throws ServletException
      */
     @POST
     public FormValidation doTestConnection(
             @QueryParameter("url") final String url,
             @QueryParameter("username") final String username,
-            @QueryParameter("password") final String password)
-            throws IOException, ServletException {
+            @QueryParameter("password") final String password) {
         try {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             if (Util.fixEmptyAndTrim(url) == null
@@ -391,5 +389,68 @@ public class OnboardingConfiguration extends GlobalConfiguration {
             }
         }
         return jobsPerCategory.toString();
+    }
+
+    @POST
+    public FormValidation doRenameJob(
+            @QueryParameter("oldJobName") final String oldJobName,
+            @QueryParameter("newJobName") final String newJobName) {
+        try {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            String jenkinsBaseUrl = System.getProperty("JENKINS_BASE_URL");
+            String username = System.getProperty("JENKINS_USERNAME");
+            String apiToken = System.getProperty("JENKINS_API_TOKEN");
+            if (Util.fixEmptyAndTrim(jenkinsBaseUrl) == null
+                    || Util.fixEmptyAndTrim(apiToken) == null
+                    || Util.fixEmptyAndTrim(username) == null
+                    || Util.fixEmptyAndTrim(oldJobName) == null
+                    || Util.fixEmptyAndTrim(newJobName) == null) {
+                return FormValidation.error("oldJobName or newJobName must not be null or empty ");
+            }
+            String queryString = URLEncoder.encode(newJobName.trim(), StandardCharsets.UTF_8);
+            String renameUrl =
+                    String.format("%s/job/%s/doRename?newName=%s", jenkinsBaseUrl, oldJobName.trim(), queryString);
+            int statusCode = httpPostBasicAuth(renameUrl, username, apiToken, null);
+            if (statusCode != HttpURLConnection.HTTP_OK) {
+                return FormValidation.error("Server error : " + statusCode);
+            } else {
+                renameJobInFile(oldJobName, newJobName);
+                return FormValidation.ok("Job Renamed Successfully");
+            }
+        } catch (IOException iox) {
+            return FormValidation.error(iox.getMessage());
+        }
+    }
+
+    private synchronized void renameJobInFile(String oldJobName, String newJobname) {
+        String latestJobPerCategory = Jenkins.get().getRootDir().getAbsolutePath() + "/latestCategoryJobs.txt";
+        Path categoryFilePath = Paths.get(latestJobPerCategory);
+
+        Map<String, String> categoryMap = new HashMap<>();
+
+        if (Files.exists(categoryFilePath)) {
+            try (Stream<String> lines = Files.lines(categoryFilePath)) {
+                lines.forEach(line -> {
+                    String[] parts = line.split(":", 2);
+                    if (parts.length == 2) {
+                        if (parts[1].trim().equals(oldJobName)) {
+                            categoryMap.put(parts[0].trim(), newJobname);
+                        } else {
+                            categoryMap.put(parts[0].trim(), parts[1].trim());
+                        }
+                    }
+                });
+            } catch (IOException e) {
+                throw new RuntimeException("Exception in renameJobInFile : " + e.getMessage());
+            }
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(categoryFilePath)) {
+            for (Map.Entry<String, String> entry : categoryMap.entrySet()) {
+                writer.write(String.format("%s: %s%n", entry.getKey(), entry.getValue()));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Exception in renameJobInFile : " + e.getMessage());
+        }
     }
 }

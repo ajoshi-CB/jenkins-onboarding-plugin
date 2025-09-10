@@ -56,4 +56,16 @@
         </f:entry>
     </f:section>
 
+    <f:section title="Rename The Job">
+        <f:entry title="${%Old Job Name}" field="oldJobName">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="${%New Job Name}" field="newJobName">
+            <f:textbox/>
+        </f:entry>
+        <f:validateButton
+                title="${%Rename Job}" progress="${%Testing...}"
+                method="renameJob" with="oldJobName,newJobName"/>
+    </f:section>
+
 </j:jelly>
