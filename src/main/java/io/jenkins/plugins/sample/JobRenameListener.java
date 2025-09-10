@@ -26,7 +26,7 @@ public class JobRenameListener extends ItemListener {
                     ((Job<?, ?>) item).renameTo(newName);
                     renameJobInFile(oldName, newName);
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to rename job: " + e.getMessage());
+                    throw new RuntimeException("Exception in method onRenamed : " + e.getMessage());
                 }
             }
         } else {
