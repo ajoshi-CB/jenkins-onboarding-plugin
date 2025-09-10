@@ -7,9 +7,7 @@
         <f:entry title="${%Description}" field="description">
             <f:textarea/>
         </f:entry>
-
         <f:block>
-
             <table>
                 <f:optionalBlock inline="true" title="Use existing dynamic view">
                     <f:entry title="${%Url}" field="url">
@@ -21,12 +19,40 @@
                     <f:entry title="${%Password}" field="password">
                         <f:password />
                     </f:entry>
+                    <f:entry field="entries">
+                        <f:repeatableProperty field="entries">
+                            <div align="right">
+                                <f:repeatableDeleteButton/>
+                            </div>
+                        </f:repeatableProperty>
+                    </f:entry>
                     <f:validateButton
                             title="${%Test Connection}" progress="${%Testing...}"
                             method="testConnection" with="url,username,password"/>
+                    <f:validateButton
+                            title="${%Test Payload}" progress="${%Testing...}"
+                            method="submitCredential" with="credentialsId"/>
                 </f:optionalBlock>
             </table>
-
         </f:block>
+    </f:section>
+
+    <f:section title="Build Info For Latest 5 Builds">
+        <f:entry title="${%File To Store Build Info}" field="latestBuildsFilePath">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="${%Latest 5 Build Links}">
+            <f:block>
+                <j:out value="${instance.buildLinks}"/>
+            </f:block>
+        </f:entry>
+    </f:section>
+
+    <f:section title="Latest Job Per Category">
+        <f:entry>
+            <f:block>
+                <j:out value="${instance.latestJobPerCategory}"/>
+            </f:block>
+        </f:entry>
     </f:section>
 </j:jelly>
